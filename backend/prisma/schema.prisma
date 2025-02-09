@@ -19,6 +19,7 @@ model User {
   fullName         String
   password         String
   profilePic       String?   @default("")
+  isDarkMod        Boolean   @default(false)
   messages         Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
   createdAt        DateTime  @default(now())

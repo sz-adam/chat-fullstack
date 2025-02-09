@@ -1,6 +1,6 @@
 import express from "express";
 
-import { login, logout, signup } from "../controllers/autController";
+import { login, logout, signup } from "../controllers/authController";
 
 const router = express.Router();
 
