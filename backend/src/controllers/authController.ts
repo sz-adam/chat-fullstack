@@ -4,6 +4,8 @@ import { PrismaClient } from "@prisma/client";
 import { handleError } from "../utils/errorHandler";
 import { generateToken } from "../utils/jwt";
 
+//TODO: profilképet megoldani
+
 const prisma = new PrismaClient();
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -35,7 +37,8 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     res.status(201).json({
       id: newUser.id,
       fullName: newUser.fullName,
-      email: newUser.email,     
+      email: newUser.email,
+      // profilePic: newUser.profilePic,
     });
   } catch (error) {
     console.error("An error occurred during registration:", error);
@@ -43,8 +46,38 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const login = (req: Request, res: Response) => {
-  res.send("login route");
+export const login = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return handleError(res, 400, "Invalid credentials");
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return handleError(res, 400, "Incorrect password");
+    }
+    const token = generateToken(user.id, res);
+
+    res.json({
+      message: "Login successful",
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        //profilePic: user.profilePic || "",
+        isDarkMod: user.isDarkMod,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    return handleError(res, 500, "An internal error has occurred");
+  }
 };
 
 export const logout = (req: Request, res: Response) => {
