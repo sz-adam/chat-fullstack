@@ -17,4 +17,5 @@ export const generateToken = (userId: number, res: Response) => {
     sameSite: "strict", // CSRF támadások megelőzése érdekében
     secure: process.env.NODE_ENV === "production", // Csak HTTPS-en küldjük, ha production környezetben vagyunk
   });
+  return token;
 };
