@@ -6,6 +6,10 @@ import { generateToken } from "../utils/jwt";
 
 //TODO: profilképet megoldani
 
+interface AuthenticatedRequest extends Request {
+  user?: {}; 
+}
+
 const prisma = new PrismaClient();
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -87,5 +91,14 @@ export const logout = (req: Request, res: Response) => {
   } catch (error) {
     console.log("Error in logout controller", error);
     return handleError(res, 500, "Internal Server Error");
+  }
+};
+
+export const checkAuth = (req: AuthenticatedRequest, res: Response): void => {
+  try {
+    res.status(200).json(req.user);
+  } catch (error) {
+    console.log("Error in checkAuth controller", (error as Error).message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
