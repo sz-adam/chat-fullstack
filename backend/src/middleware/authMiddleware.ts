@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { handleError } from "../utils/errorHandler";
 
 const prisma = new PrismaClient();
 
 interface AuthenticatedRequest extends Request {
-  user?: {};
+  user?: User;
 }
 
 export const protectRoute = async (
@@ -40,13 +40,9 @@ export const protectRoute = async (
     req.user = user;
 
     next();
-  } catch (error: unknown) {
-    if (error instanceof Error) {     
-      console.error("Error in protectRoute middleware:", error.message);      
+  } catch (error) {     
+      console.error("Error in protectRoute middleware:", (error as Error).message);      
       return handleError(res, 500, "Internal server error");
-    } else {      
-      console.error("Unexpected error in protectRoute middleware:", error);     
-      return handleError(res, 500, "Internal server error");
-    }
+   
   }
 };

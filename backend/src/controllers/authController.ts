@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { handleError } from "../utils/errorHandler";
 import { generateToken } from "../utils/jwt";
 
 //TODO: profilképet megoldani
 
 interface AuthenticatedRequest extends Request {
-  user?: {}; 
+  user?: User; 
 }
 
 const prisma = new PrismaClient();
@@ -99,6 +99,6 @@ export const checkAuth = (req: AuthenticatedRequest, res: Response): void => {
     res.status(200).json(req.user);
   } catch (error) {
     console.log("Error in checkAuth controller", (error as Error).message);
-    res.status(500).json({ message: "Internal Server Error" });
+    return handleError(res, 500, "Internal server error");
   }
 };
