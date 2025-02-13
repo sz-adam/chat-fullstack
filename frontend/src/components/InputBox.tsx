@@ -4,14 +4,18 @@ type Props = {
   id: string;
   type: string;
   label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-function InputBox({ id, type = "text", label }: Props) {
+const InputBox = ({ id, type = "text", label, value, onChange }: Props) => {
   return (
     <div className="relative mt-2 w-full">
       <input
         type={type}
         id={id}
+        value={value}
+        onChange={onChange}
         className="border peer block w-full rounded-lg border-gray-300 bg-transparent px-2.5 pt-4 pb-2.5 text-sm focus:border-blue-900 focus:outline-none focus:ring-0"
         placeholder=" "
         autoComplete="off"
@@ -21,6 +25,6 @@ function InputBox({ id, type = "text", label }: Props) {
       </span>
     </div>
   );
-}
+};
 
 export default InputBox;
