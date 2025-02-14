@@ -8,6 +8,7 @@ interface AuthContextType {
   checkAuth: () => Promise<void>;
   authUser: User | null;
   logout: () => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -51,9 +52,29 @@ export const AuthProvider: React.FC = ({ children }: any) => {
     }
   };
 
+  const register = async (
+    fullName: string,
+    email: string,
+    password: string
+  ) => {
+    try {
+      const response = await apiClient.post("/auth/signup", {
+        fullName,
+        email,
+        password,
+      });
+      if (response.status === 201) {
+        setAuthUser(response.data.user);
+        setIsAuthenticated(true);
+      }
+    } catch (error: any) {
+      console.error("Registration error:", error);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, checkAuth, authUser, logout }}
+      value={{ isAuthenticated, login, checkAuth, authUser, logout, register }}
     >
       {children}
     </AuthContext.Provider>
