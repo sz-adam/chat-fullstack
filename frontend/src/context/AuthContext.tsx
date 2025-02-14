@@ -7,6 +7,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   checkAuth: () => Promise<void>;
   authUser: User | null;
+  logout: () => Promise<void>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -22,7 +23,7 @@ export const AuthProvider: React.FC = ({ children }: any) => {
       });
       if (response.status === 200) {
         setAuthUser(response.data.user);
-      }     
+      }
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -40,9 +41,19 @@ export const AuthProvider: React.FC = ({ children }: any) => {
     }
   };
 
+  const logout = async () => {
+    try {
+      await apiClient.post("auth/logout");
+      setAuthUser(null);
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error("logout error:", error);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, checkAuth, authUser }}
+      value={{ isAuthenticated, login, checkAuth, authUser, logout }}
     >
       {children}
     </AuthContext.Provider>
