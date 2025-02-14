@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const MainNavigation = () => {
-  const { logout } = useAuth();
-
+  const { logout, authUser } = useAuth();
+  useEffect(() => {
+    console.log(authUser);
+  }, []);
   return (
     <div>
       <div className="navbar text-slate-500">
@@ -11,6 +13,9 @@ const MainNavigation = () => {
           <a className="btn btn-ghost text-xl">Chat App</a>
         </div>
         <div className="flex-none gap-2">
+          <div className="form-control">
+            <div>{authUser?.fullName}</div>
+          </div>
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
@@ -20,7 +25,7 @@ const MainNavigation = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  src={authUser?.profilePic}
                 />
               </div>
             </div>

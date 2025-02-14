@@ -13,7 +13,7 @@ interface AuthenticatedRequest extends Request {
 const prisma = new PrismaClient();
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password, avatar } = req.body;
 
   if (!fullName || !email || !password) {
     return handleError(res, 400, "All fields are required");
@@ -32,7 +32,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.user.create({
-      data: { fullName, email, password: hashedPassword },
+      data: { fullName, email, password: hashedPassword, profilePic:avatar },
     });
 
     // JWT generálás regisztráció utáni egybőli belépéshez
@@ -42,7 +42,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       id: newUser.id,
       fullName: newUser.fullName,
       email: newUser.email,
-      // profilePic: newUser.profilePic,
+      profilePic: newUser.profilePic,
     });
   } catch (error) {
     console.error("An error occurred during registration:", error);
@@ -73,7 +73,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
-        //profilePic: user.profilePic || "",
+        profilePic: user.profilePic || "",
         isDarkMod: user.isDarkMod,
       },
       token,

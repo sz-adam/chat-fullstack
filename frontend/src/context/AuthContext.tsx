@@ -8,7 +8,12 @@ interface AuthContextType {
   checkAuth: () => Promise<void>;
   authUser: User | null;
   logout: () => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    gender: string
+  ) => Promise<void>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -55,14 +60,22 @@ export const AuthProvider: React.FC = ({ children }: any) => {
   const register = async (
     fullName: string,
     email: string,
-    password: string
+    password: string,
+    gender: string
   ) => {
     try {
+      const randomUserResponse = await fetch(
+        `https://randomuser.me/api/?gender=${gender}`
+      );
+      const data = await randomUserResponse.json();
+      const avatar = data.results[0].picture.large;
       const response = await apiClient.post("/auth/signup", {
         fullName,
         email,
         password,
+        avatar,
       });
+
       if (response.status === 201) {
         setAuthUser(response.data.user);
         setIsAuthenticated(true);
