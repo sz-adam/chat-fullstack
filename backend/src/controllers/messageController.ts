@@ -61,3 +61,32 @@ export const sendMessage = async (
     handleError(res, 500, "Internal server error");
   }
 };
+
+export const getAllMessages = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    // Beszélgető fél
+    const userToChatId = Number(req.params?.id);
+    // Bejelentkezett felhasználó
+    const loggedInUserId = Number(req.user?.id);
+
+    const messages = await prisma.message.findMany({
+      where: {
+        OR: [
+          { senderId: loggedInUserId, receiverId: userToChatId },
+          { senderId: userToChatId, receiverId: loggedInUserId },
+        ],
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error in getMessages controller:", error);
+    handleError(res, 500, "Internal server error");
+  }
+};
