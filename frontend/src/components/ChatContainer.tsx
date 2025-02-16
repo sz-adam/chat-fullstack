@@ -6,8 +6,11 @@ import MobilMenu from "./MobilMenu";
 import ChatWindow from "./ChatWindow";
 import MessageInput from "./MessageInput";
 
+import { LuMessageSquare } from "react-icons/lu";
+
+
 const ChatContainer = () => {
-  const { loggedInUser, fetchLoggedInUsers } = useMessages();
+  const { loggedInUser, fetchLoggedInUsers, receiverMessages } = useMessages();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -42,7 +45,16 @@ const ChatContainer = () => {
       </div>
 
       <div className="w-full lg:w-[70%] p-4 overflow-auto border-l">
-        <ChatWindow />
+        {receiverMessages.length !== 0 ? (
+          <>
+            <ChatWindow />
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-[calc(100vh-400px)] text-xl font-semibold  rounded-lg shadow-lg p-6">
+            <LuMessageSquare className="text-9xl animate-bounce" />
+            <p className="mt-2"> Sorry, there are no messages yet</p>
+          </div>
+        )}
         <MessageInput />
       </div>
     </div>
