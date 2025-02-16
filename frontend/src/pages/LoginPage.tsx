@@ -13,7 +13,7 @@ function LoginPage() {
     event.preventDefault();
     try {
       await login(email, password);
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       alert("Login failed!");
     }
@@ -50,7 +50,7 @@ function LoginPage() {
           <p className="text-center">
             Don't have an account?&nbsp;
             <Link
-              to="/signin"
+              to="/registration"
               className="whitespace-nowrap font-semibold hover:underline text-blue-900"
             >
               Registration
