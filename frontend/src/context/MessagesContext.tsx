@@ -5,6 +5,7 @@ import { apiClient } from "../lib/axios";
 interface MessagesContextType {
   loggedInUser: User[];
   fetchLoggedInUsers: () => void;
+  isOnline: boolean;
 }
 
 const UserContext = createContext<MessagesContextType | undefined>(undefined);
@@ -15,22 +16,21 @@ interface MessagesProviderProps {
 
 const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
   const [loggedInUser, setLoggedInUser] = useState<User[]>([]);
+  const [isOnline, setIsOnline] = useState<boolean>(false);
 
   const fetchLoggedInUsers = async () => {
     try {
-      const response = await apiClient.get("/messages/users");     
-      setLoggedInUser(response.data); 
+      const response = await apiClient.get("/messages/users");
+      setLoggedInUser(response.data);
     } catch (error) {
       console.log("An error occurred while loading users:", error);
     }
   };
 
-  useEffect(() => {
-    fetchLoggedInUsers();
-  }, []);
-
   return (
-    <UserContext.Provider value={{ loggedInUser, fetchLoggedInUsers }}>
+    <UserContext.Provider
+      value={{ loggedInUser, fetchLoggedInUsers, isOnline }}
+    >
       {children}
     </UserContext.Provider>
   );
