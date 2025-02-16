@@ -1,11 +1,14 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { User } from "../model/UserModel";
 import { apiClient } from "../lib/axios";
+import { Message } from "../model/MessagesModel";
 
 interface MessagesContextType {
   loggedInUser: User[];
   fetchLoggedInUsers: () => void;
   isOnline: boolean;
+  receiverMessages: Message[];
+  fetchReceiverMessage: (id: number) => void;
 }
 
 const UserContext = createContext<MessagesContextType | undefined>(undefined);
@@ -17,6 +20,7 @@ interface MessagesProviderProps {
 const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
   const [loggedInUser, setLoggedInUser] = useState<User[]>([]);
   const [isOnline, setIsOnline] = useState<boolean>(false);
+  const [receiverMessages, setReceiverMessages] = useState<Message[]>([]);
 
   const fetchLoggedInUsers = async () => {
     try {
@@ -27,9 +31,28 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
     }
   };
 
+  const fetchReceiverMessage = async (id: number) => {
+    try {
+      const receiverResponse = await apiClient.get(`/messages/${id}`);
+      setReceiverMessages(receiverResponse.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReceiverMessage;
+  }, []);
+
   return (
     <UserContext.Provider
-      value={{ loggedInUser, fetchLoggedInUsers, isOnline }}
+      value={{
+        loggedInUser,
+        fetchLoggedInUsers,
+        isOnline,
+        receiverMessages,
+        fetchReceiverMessage,
+      }}
     >
       {children}
     </UserContext.Provider>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { User } from "../model/UserModel";
 import { useMessages } from "../context/MessagesContext";
 
@@ -7,10 +7,15 @@ type Props = {
 };
 
 function LoggedInUser({ loggedInUser }: Props) {
-  const { isOnline } = useMessages();
+  const { isOnline, fetchReceiverMessage } = useMessages();
 
   return (
-    <div className="flex text-center items-center gap-4 p-2 glassmorphism rounded-xl hover:bg-white/20 transition-all m-2 cursor-pointer">
+    <div
+      className="flex text-center items-center gap-4 p-2 glassmorphism rounded-xl hover:bg-white/20 transition-all m-2 cursor-pointer"
+      onClick={() => {
+        fetchReceiverMessage(loggedInUser.id);
+      }}
+    >
       {isOnline ? (
         <div className="avatar online">
           <div className="w-12 md:w-10 rounded-full">
