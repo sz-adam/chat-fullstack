@@ -10,16 +10,16 @@ function LoggedInUser({ loggedInUser }: Props) {
   const { isOnline } = useMessages();
 
   return (
-    <div className="flex text-center items-center gap-4 p-2 glassmorphism rounded-xl hover:bg-white/20 transition-all m-2 cursor-pointer overflow-auto">
+    <div className="flex text-center items-center gap-4 p-2 glassmorphism rounded-xl hover:bg-white/20 transition-all m-2 cursor-pointer">
       {isOnline ? (
         <div className="avatar online">
-          <div className="w-12 md:w-14 rounded-full">
+          <div className="w-12 md:w-10 rounded-full">
             <img src={loggedInUser.profilePic} />
           </div>
         </div>
       ) : (
         <div className="avatar offline">
-          <div className="w-12 md:w-14 rounded-full">
+          <div className="w-12 md:w-10 rounded-full">
             <img src={loggedInUser.profilePic} />
           </div>
         </div>

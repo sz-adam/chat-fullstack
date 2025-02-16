@@ -3,6 +3,8 @@ import { useMessages } from "../context/MessagesContext";
 import LoggedInUser from "./LoggedInUser";
 import { RiMenu3Line } from "react-icons/ri";
 import MobilMenu from "./MobilMenu";
+import ChatWindow from "./ChatWindow";
+import MessageInput from "./MessageInput";
 
 const ChatContainer = () => {
   const { loggedInUser, fetchLoggedInUsers } = useMessages();
@@ -15,7 +17,7 @@ const ChatContainer = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <div className="w-[90%] h-screen mx-auto p-2 glassmorphism rounded-2xl flex flex-col lg:flex-row ">
+    <div className="w-[90%] mx-auto p-2 glassmorphism rounded-2xl flex flex-col lg:flex-row ">
       <div className="w-full lg:w-[30%]  p-4 text-center ">
         <div className="flex w-full items-center justify-center mb-4 ">
           <h2 className="text-3xl font-bold  text-center">Users</h2>
@@ -39,7 +41,10 @@ const ChatContainer = () => {
         </div>
       </div>
 
-      <div className="w-full lg:w-[70%]  bg-green-300 p-4">70% szélesség</div>
+      <div className="w-full lg:w-[70%] p-4 overflow-auto border-l">
+        <ChatWindow />
+        <MessageInput />
+      </div>
     </div>
   );
 };
