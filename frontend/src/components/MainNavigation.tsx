@@ -1,11 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuth } from "../context/AuthContext";
 
 const MainNavigation = () => {
   const { logout, authUser } = useAuth();
-  useEffect(() => {
-    console.log(authUser);
-  }, []);
+ 
   return (
     <div>
       <div className="navbar text-slate-500">
