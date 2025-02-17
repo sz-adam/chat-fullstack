@@ -4,9 +4,15 @@ import { useMessages } from "../context/MessagesContext";
 
 type Props = {
   loggedInUser: User;
+  setSelectedReceiver: React.Dispatch<React.SetStateAction<number | null>>;
+  selectedReceiver: number | null;
 };
 
-function LoggedInUser({ loggedInUser }: Props) {
+function LoggedInUser({
+  loggedInUser,
+  selectedReceiver,
+  setSelectedReceiver,
+}: Props) {
   const { isOnline, fetchReceiverMessage } = useMessages();
 
   return (
@@ -14,6 +20,7 @@ function LoggedInUser({ loggedInUser }: Props) {
       className="flex text-center items-center gap-4 p-2 glassmorphism rounded-xl hover:bg-white/20 transition-all m-2 cursor-pointer"
       onClick={() => {
         fetchReceiverMessage(loggedInUser.id);
+        setSelectedReceiver(loggedInUser.id);
       }}
     >
       {isOnline ? (

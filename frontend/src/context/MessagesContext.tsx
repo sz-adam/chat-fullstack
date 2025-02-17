@@ -9,6 +9,7 @@ interface MessagesContextType {
   isOnline: boolean;
   receiverMessages: Message[];
   fetchReceiverMessage: (id: number) => void;
+  fetchSendMessage: (id: number, message: string) => Promise<void>;
 }
 
 const UserContext = createContext<MessagesContextType | undefined>(undefined);
@@ -44,6 +45,18 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
     fetchReceiverMessage;
   }, []);
 
+  const fetchSendMessage = async (id: number, message: string) => {
+    try {
+      const response = await apiClient.post(`/messages/send/${id}`, {
+        text: message,
+      });
+
+      console.log("Message sent:", response.data);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -52,6 +65,7 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
         isOnline,
         receiverMessages,
         fetchReceiverMessage,
+        fetchSendMessage,
       }}
     >
       {children}

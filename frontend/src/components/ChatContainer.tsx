@@ -12,6 +12,7 @@ import { LuMessageSquare } from "react-icons/lu";
 const ChatContainer = () => {
   const { loggedInUser, fetchLoggedInUsers, receiverMessages } = useMessages();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [selectedReceiver, setSelectedReceiver] = useState<number | null>(null);
 
   useEffect(() => {
     fetchLoggedInUsers();
@@ -39,7 +40,13 @@ const ChatContainer = () => {
 
         <div className="hidden lg:block">
           {loggedInUser.map((loggedIn) => (
-            <LoggedInUser key={loggedIn.id} loggedInUser={loggedIn} />
+            <div key={loggedIn.id}>
+              <LoggedInUser
+                loggedInUser={loggedIn}
+                selectedReceiver={selectedReceiver}
+                setSelectedReceiver={setSelectedReceiver}
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -55,7 +62,7 @@ const ChatContainer = () => {
             <p className="mt-2"> Sorry, there are no messages yet</p>
           </div>
         )}
-        <MessageInput />
+        <MessageInput receiverId={selectedReceiver} />
       </div>
     </div>
   );
