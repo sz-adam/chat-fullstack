@@ -13,11 +13,11 @@ const ChatContainer = () => {
   const { loggedInUser, fetchLoggedInUsers, receiverMessages } = useMessages();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [selectedReceiver, setSelectedReceiver] = useState<number | null>(null);
-
+  
   useEffect(() => {
     fetchLoggedInUsers();
   }, []);
-
+  
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
@@ -36,6 +36,8 @@ const ChatContainer = () => {
           isMenuOpen={isMenuOpen}
           loggedInUser={loggedInUser}
           toggleMenu={toggleMenu}
+          selectedReceiver={selectedReceiver}
+          setSelectedReceiver={setSelectedReceiver}
         />
 
         <div className="hidden lg:block">
@@ -57,9 +59,9 @@ const ChatContainer = () => {
             <ChatWindow />
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-[calc(100vh-400px)] text-xl font-semibold  rounded-lg shadow-lg p-6">
+          <div className="z-0 flex flex-col items-center justify-center h-[calc(100vh-400px)] text-xl font-semibold  rounded-lg shadow-lg p-6">
             <LuMessageSquare className="text-9xl animate-bounce" />
-            <p className="mt-2"> Sorry, there are no messages yet</p>
+            <p className="mt-2 text-center">Sorry, there are no messages yet</p>
           </div>
         )}
         <MessageInput receiverId={selectedReceiver} />

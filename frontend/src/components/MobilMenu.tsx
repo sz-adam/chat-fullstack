@@ -8,12 +8,20 @@ type Props = {
   loggedInUser: User[];
   isMenuOpen: boolean;
   toggleMenu: () => void;
+  setSelectedReceiver: React.Dispatch<React.SetStateAction<number | null>>;
+  selectedReceiver: number | null;
 };
 
-function MobilMenu({ loggedInUser, toggleMenu, isMenuOpen }: Props) {
+function MobilMenu({
+  loggedInUser,
+  toggleMenu,
+  isMenuOpen,
+  setSelectedReceiver,
+  selectedReceiver,
+}: Props) {
   return (
     <div
-      className={`absolute top-0 left-[-6%] bg-gray-800 rounded-2xl w-full h-screen transition-transform transform ${
+      className={`z-10  absolute top-0 left-[-6%] bg-gray-800 rounded-2xl w-full h-screen transition-transform transform ${
         isMenuOpen ? "translate-x-5" : "-translate-x-full"
       } lg:hidden p-4`}
     >
@@ -26,7 +34,13 @@ function MobilMenu({ loggedInUser, toggleMenu, isMenuOpen }: Props) {
       <h3 className="text-2xl text-white mb-4">Users List</h3>
       <div className="space-y-4">
         {loggedInUser.map((loggedIn) => (
-          <LoggedInUser key={loggedIn.id} loggedInUser={loggedIn} />
+          <LoggedInUser
+            key={loggedIn.id}
+            loggedInUser={loggedIn}
+            selectedReceiver={selectedReceiver}
+            setSelectedReceiver={setSelectedReceiver}
+            toggleMenu={toggleMenu}
+          />
         ))}
       </div>
     </div>

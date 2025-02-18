@@ -6,12 +6,14 @@ type Props = {
   loggedInUser: User;
   setSelectedReceiver: React.Dispatch<React.SetStateAction<number | null>>;
   selectedReceiver: number | null;
+  toggleMenu?: () => void;
 };
 
 function LoggedInUser({
   loggedInUser,
   selectedReceiver,
   setSelectedReceiver,
+  toggleMenu,
 }: Props) {
   const { isOnline, fetchReceiverMessage } = useMessages();
 
@@ -21,6 +23,7 @@ function LoggedInUser({
       onClick={() => {
         fetchReceiverMessage(loggedInUser.id);
         setSelectedReceiver(loggedInUser.id);
+        if (toggleMenu) toggleMenu();
       }}
     >
       {isOnline ? (
