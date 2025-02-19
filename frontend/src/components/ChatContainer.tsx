@@ -8,7 +8,6 @@ import MessageInput from "./MessageInput";
 
 import { LuMessageSquare } from "react-icons/lu";
 
-
 const ChatContainer = () => {
   const { loggedInUser, fetchLoggedInUsers, receiverMessages } = useMessages();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -28,13 +27,9 @@ const ChatContainer = () => {
       <div className="w-full lg:w-[30%]  p-4 text-center ">
         <div className="flex w-full items-center md:justify-center justify-between mb-4 ">
           <h2 className="lg:hidden text-3xl font-bold  text-center">
-            {selectedUserData ? (
-              <div className="text-xl w-full border-b">
-                {selectedUserData?.fullName}
-              </div>
-            ) : (
-              "User"
-            )}
+            <div className="text-xl w-full border-b">
+              {selectedUserData?.fullName}
+            </div>
           </h2>
           <div className="flex justify-end lg:hidden">
             <RiMenu3Line
@@ -47,7 +42,6 @@ const ChatContainer = () => {
           isMenuOpen={isMenuOpen}
           loggedInUser={loggedInUser}
           toggleMenu={toggleMenu}
-          selectedReceiver={selectedReceiver}
           setSelectedReceiver={setSelectedReceiver}
         />
 
@@ -56,7 +50,6 @@ const ChatContainer = () => {
             <div key={loggedIn.id}>
               <LoggedInUser
                 loggedInUser={loggedIn}
-                selectedReceiver={selectedReceiver}
                 setSelectedReceiver={setSelectedReceiver}
               />
             </div>
@@ -67,7 +60,7 @@ const ChatContainer = () => {
       <div className="w-full lg:w-[70%] p-4 overflow-auto md:border-l">
         {receiverMessages.length !== 0 ? (
           <>
-            <div className="hidden lg:block text-2xl font-bold w-full text-center text-cyan-800 border-b">
+            <div className="hidden lg:block text-2xl font-bold w-full text-center  border-b">
               {selectedUserData?.fullName}
             </div>
 

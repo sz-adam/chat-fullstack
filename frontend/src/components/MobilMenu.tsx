@@ -1,7 +1,6 @@
 import React from "react";
 import LoggedInUser from "./LoggedInUser";
 import { User } from "../model/UserModel";
-
 import { IoMdClose } from "react-icons/io";
 
 type Props = {
@@ -9,7 +8,6 @@ type Props = {
   isMenuOpen: boolean;
   toggleMenu: () => void;
   setSelectedReceiver: React.Dispatch<React.SetStateAction<number | null>>;
-  selectedReceiver: number | null;
 };
 
 function MobilMenu({
@@ -17,7 +15,6 @@ function MobilMenu({
   toggleMenu,
   isMenuOpen,
   setSelectedReceiver,
-  selectedReceiver,
 }: Props) {
   return (
     <div
@@ -37,7 +34,6 @@ function MobilMenu({
           <LoggedInUser
             key={loggedIn.id}
             loggedInUser={loggedIn}
-            selectedReceiver={selectedReceiver}
             setSelectedReceiver={setSelectedReceiver}
             toggleMenu={toggleMenu}
           />

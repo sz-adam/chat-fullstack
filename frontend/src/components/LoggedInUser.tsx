@@ -1,17 +1,15 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { User } from "../model/UserModel";
 import { useMessages } from "../context/MessagesContext";
 
 type Props = {
   loggedInUser: User;
   setSelectedReceiver: React.Dispatch<React.SetStateAction<number | null>>;
-  selectedReceiver: number | null;
   toggleMenu?: () => void;
 };
 
 function LoggedInUser({
   loggedInUser,
-  selectedReceiver,
   setSelectedReceiver,
   toggleMenu,
 }: Props) {
@@ -39,7 +37,7 @@ function LoggedInUser({
           </div>
         </div>
       )}
-      <h3 className="text-2xl font-semibold lg:text-slate-600 text-center">
+      <h3 className="text-2xl font-semibold  text-center">
         {loggedInUser.fullName}
       </h3>
     </div>

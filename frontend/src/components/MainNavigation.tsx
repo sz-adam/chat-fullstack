@@ -11,7 +11,7 @@ const MainNavigation = () => {
           <a className="btn btn-ghost text-xl">Chat App</a>
         </div>
         <div className="flex-none gap-2">
-          <div className="form-control">
+          <div className="form-control text-white">
             <div>{authUser?.fullName}</div>
           </div>
           <div className="dropdown dropdown-end">
