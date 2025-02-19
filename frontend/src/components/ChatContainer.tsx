@@ -24,7 +24,7 @@ const ChatContainer = () => {
   );
 
   return (
-    <div className="w-[90%] mx-auto p-2 glassmorphism rounded-2xl flex flex-col lg:flex-row ">
+    <div className="w-[95%] mx-auto  glassmorphism rounded-2xl flex flex-col lg:flex-row ">
       <div className="w-full lg:w-[30%]  p-4 text-center ">
         <div className="flex w-full items-center md:justify-center justify-between mb-4 ">
           <h2 className="lg:hidden text-3xl font-bold  text-center">
