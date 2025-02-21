@@ -6,13 +6,14 @@ import { Message } from "../model/MessagesModel";
 interface MessagesContextType {
   loggedInUser: User[];
   fetchLoggedInUsers: () => void;
-  isOnline: boolean;
   receiverMessages: Message[];
   fetchReceiverMessage: (id: number) => void;
   fetchSendMessage: (id: number, message: string) => Promise<void>;
 }
 
-const UserContext = createContext<MessagesContextType | undefined>(undefined);
+const userMessagesContext = createContext<MessagesContextType | undefined>(
+  undefined
+);
 
 interface MessagesProviderProps {
   children: ReactNode;
@@ -20,7 +21,6 @@ interface MessagesProviderProps {
 
 const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
   const [loggedInUser, setLoggedInUser] = useState<User[]>([]);
-  const [isOnline, setIsOnline] = useState<boolean>(false);
   const [receiverMessages, setReceiverMessages] = useState<Message[]>([]);
 
   const fetchLoggedInUsers = async () => {
@@ -32,49 +32,44 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
     }
   };
 
+  
   const fetchReceiverMessage = async (id: number) => {
     try {
-      const receiverResponse = await apiClient.get(`/messages/${id}`);
-      setReceiverMessages(receiverResponse.data);
+      const response = await apiClient.get(`/messages/${id}`);
+      setReceiverMessages(response.data);
+      fetchLoggedInUsers();
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    fetchReceiverMessage;
-  }, []);
-
   const fetchSendMessage = async (id: number, message: string) => {
     try {
-      const response = await apiClient.post(`/messages/send/${id}`, {
+       await apiClient.post(`/messages/send/${id}`, {
         text: message,
       });
-
-      console.log("Message sent:", response.data);
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
   return (
-    <UserContext.Provider
+    <userMessagesContext.Provider
       value={{
         loggedInUser,
         fetchLoggedInUsers,
-        isOnline,
         receiverMessages,
         fetchReceiverMessage,
         fetchSendMessage,
       }}
     >
       {children}
-    </UserContext.Provider>
+    </userMessagesContext.Provider>
   );
 };
 
 const useMessages = (): MessagesContextType => {
-  const context = React.useContext(UserContext);
+  const context = React.useContext(userMessagesContext);
   if (!context) {
     throw new Error("Messages must be used within a MessagesProvider");
   }

@@ -7,4 +7,5 @@ export interface User {
   isDarkMode: boolean;
   createdAt: string;
   updatedAt: string;
+  unreadMessages: number;
 }
