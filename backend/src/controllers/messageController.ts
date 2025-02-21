@@ -8,6 +8,33 @@ interface AuthenticatedRequest extends Request {
   user?: User;
 }
 
+// Olvasatlan üzenetek 
+export const unreadMessage = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = Number(req.user?.id);
+    if (!userId) {
+      return handleError(res, 400, "User ID is required");
+    }
+
+    const unreadMessages = await prisma.message.findMany({
+      where: {
+        receiverId: userId,
+        isRead: false,
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    res.status(200).json(unreadMessages);
+  } catch (error) {
+    console.error("Error fetching unread messages:", error);   
+    handleError(res, 500, "Internal server error");
+  }
+};
+
+//Összes felhasználó kivéve a bejelentkezett
 export const allUser = async (
   req: AuthenticatedRequest,
   res: Response
@@ -20,9 +47,7 @@ export const allUser = async (
     const loggedInUserId = req.user.id;
 
     const filteredUsers = await prisma.user.findMany({
-      where: {
-        id: { not: loggedInUserId },
-      },
+      where: { id: { not: loggedInUserId } },
       select: {
         id: true,
         fullName: true,
@@ -30,13 +55,28 @@ export const allUser = async (
       },
     });
 
-    res.status(200).json(filteredUsers);
+    // Olvasatlan üzenetek számának lekérése
+    const usersWithUnreadMessages = await Promise.all(
+      filteredUsers.map(async (user) => {
+        const unreadCount = await prisma.message.count({
+          where: {
+            senderId: user.id,
+            receiverId: loggedInUserId,
+            isRead: false,
+          },
+        });
+        return { ...user, unreadMessages: unreadCount };
+      })
+    );
+
+    res.status(200).json(usersWithUnreadMessages);
   } catch (error) {
     console.error(error);
     handleError(res, 500, "Something went wrong");
   }
 };
 
+// Üzenet küldése
 export const sendMessage = async (
   req: AuthenticatedRequest,
   res: Response
@@ -52,6 +92,7 @@ export const sendMessage = async (
         receiverId,
         text,
         createdAt: new Date(),
+        isRead: false,
       },
     });
 
@@ -67,10 +108,18 @@ export const getAllMessages = async (
   res: Response
 ): Promise<void> => {
   try {
-    // Beszélgető fél
     const userToChatId = Number(req.params?.id);
-    // Bejelentkezett felhasználó
     const loggedInUserId = Number(req.user?.id);
+
+    // olvasatlan üzenetek állapotának frissítése
+    await prisma.message.updateMany({
+      where: {
+        senderId: userToChatId,
+        receiverId: loggedInUserId,
+        isRead: false,
+      },
+      data: { isRead: true },
+    });
 
     const messages = await prisma.message.findMany({
       where: {
@@ -79,9 +128,7 @@ export const getAllMessages = async (
           { senderId: userToChatId, receiverId: loggedInUserId },
         ],
       },
-      orderBy: {
-        createdAt: "asc",
-      },
+      orderBy: { createdAt: "asc" },
     });
 
     res.status(200).json(messages);
