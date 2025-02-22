@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useMessages } from "../context/MessagesContext";
 import { useAuth } from "../context/AuthContext";
 
+import { MdClose } from "react-icons/md";
+
 const ChatWindow = () => {
-  const { receiverMessages } = useMessages();
+  const { receiverMessages, deleteMessage } = useMessages();
   const { authUser } = useAuth();
   const [selectedMessageId, setSelectedMessageId] = useState<number | null>(
     null
@@ -25,12 +27,20 @@ const ChatWindow = () => {
               msg.senderId === authUser!.id ? "chat-end" : "chat-start"
             }`}
           >
-            <div className="chat-bubble max-w-[70%] cursor-pointer">
+            <div className="chat-bubble max-w-[70%] cursor-pointer relative">
               <p>{msg.text}</p>
               {selectedMessageId === msg.id && (
-                <span className="text-xs text-gray-500 block mt-1">
-                  {new Date(msg.createdAt).toLocaleString()}
-                </span>
+                <div>
+                  <span className="text-xs text-gray-500 block mt-1">
+                    {new Date(msg.createdAt).toLocaleString()}
+                  </span>
+                  <button
+                    onClick={() => deleteMessage(msg.id)}
+                    className="absolute top-[-18px] right-[-10px] text-red-500 p-1 text-2xl"
+                  >
+                    <MdClose />
+                  </button>
+                </div>
               )}
             </div>
           </div>
