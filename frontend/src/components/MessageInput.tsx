@@ -11,7 +11,9 @@ const MessageInput = ({ receiverId }: MessageInputProps) => {
   const [showPicker, setShowPicker] = useState(false);
   const { fetchSendMessage } = useMessages();
 
-  const handleSendMessage = async (event: React.FormEvent) => {
+  const handleSendMessage = async (
+    event: React.FormEvent | React.KeyboardEvent
+  ) => {
     event.preventDefault();
     if (!sendMessage.trim() || !receiverId) return;
 
@@ -34,6 +36,7 @@ const MessageInput = ({ receiverId }: MessageInputProps) => {
         <input
           type="text"
           value={sendMessage}
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage(e)}
           onChange={(e) => setSendMessage(e.target.value)}
           placeholder="Type a message..."
           className="flex-1 input input-bordered input-info text-black pr-6"
