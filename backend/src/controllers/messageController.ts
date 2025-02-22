@@ -137,3 +137,41 @@ export const getAllMessages = async (
     handleError(res, 500, "Internal server error");
   }
 };
+
+
+//üzenet törlése 
+export const deleteMessage = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const messageId = Number(req.params?.id);
+    const loggedInUserId = Number(req.user?.id);
+
+    if (!messageId) {
+      return handleError(res, 400, "Message ID is required");
+    }
+
+    // Ellenőrizzük, hogy az üzenet létezik-e és a bejelentkezett felhasználó küldte-e
+    const message = await prisma.message.findUnique({
+      where: { id: messageId },
+    });
+
+    if (!message) {
+      return handleError(res, 404, "Message not found");
+    }
+
+    if (message.senderId !== loggedInUserId) {
+      return handleError(res, 403, "You can only delete your own messages");
+    }
+
+    await prisma.message.delete({
+      where: { id: messageId },
+    });
+
+    res.status(200).json({ message: "Message deleted successfully" });
+  } catch (error) {
+    console.error("Error in deleteMessage controller:", error);
+    handleError(res, 500, "Internal server error");
+  }
+};
