@@ -33,7 +33,7 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
   const fetchLoggedInUsers = async () => {
     try {
       const response = await apiClient.get("/messages/users");
-      setLoggedInUser(response.data);
+      setLoggedInUser(response.data);      
     } catch (error) {
       console.log("An error occurred while loading users:", error);
     }
@@ -83,6 +83,8 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
       socket.on("newMessage", (newMessage: Message) => {
         if (newMessage.senderId === selectedUserId) {
           setReceiverMessages((prev) => [...prev, newMessage]);
+        } else{
+          fetchLoggedInUsers();          
         }
       });
 
