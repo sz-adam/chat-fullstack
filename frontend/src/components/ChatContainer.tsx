@@ -66,7 +66,6 @@ const ChatContainer = () => {
             </div>
 
             <ChatWindow />
-            <MessageInput receiverId={selectedReceiver} />
           </>
         ) : (
           <div className="z-0 flex flex-col items-center justify-center h-[calc(100vh-400px)] text-xl font-semibold p-6">
@@ -74,6 +73,7 @@ const ChatContainer = () => {
             <p className="mt-2 text-center">Sorry, there are no messages yet</p>
           </div>
         )}
+        {selectedReceiver ? <MessageInput receiverId={selectedReceiver} /> : ""}
       </div>
     </div>
   );
