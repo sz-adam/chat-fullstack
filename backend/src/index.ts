@@ -4,12 +4,12 @@ import authRoutes from "./routes/authRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { app, server } from "./utils/socket";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5001;
 
-const app = express();
 app.use(cookieParser());
 
 app.use(
@@ -23,6 +23,6 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`server started ${PORT}`);
 });
