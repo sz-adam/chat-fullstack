@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { User } from "../model/UserModel";
 import { apiClient } from "../lib/axios";
+import { io, Socket } from "socket.io-client";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -14,12 +15,66 @@ interface AuthContextType {
     password: string,
     gender: string
   ) => Promise<void>;
+  connectSocket: () => void;
+  disconnectSocket: () => void;
+  onlineUsers: string[];
 }
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC = ({ children }: any) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authUser, setAuthUser] = useState<User | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+
+  // Socket kapcsolat
+  const connectSocket = () => {
+    if (authUser && !socket) {
+      const socketInstance = io("http://localhost:5001", {
+        query: { userId: authUser.id },
+        reconnection: true,
+      });
+
+      socketInstance.on("connect", () => {
+        console.log(
+          "Connected to socket server with socket ID:",
+          socketInstance.id
+        );
+      });
+      //csatlakozott felhasználók id-nak küldése
+      socketInstance.on("getOnlineUsers", (userIds) => {
+        console.log(userIds);
+        setOnlineUsers(userIds);
+      });
+
+      setSocket(socketInstance);
+    } else if (!authUser) {
+      console.log("User is not authenticated. Cannot connect to socket.");
+    } else {
+      console.log("Socket already connected.");
+    }
+  };
+
+  const disconnectSocket = () => {
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+      console.log("Socket disconnected");
+    }
+  };
+
+  useEffect(() => {
+    if (authUser && !socket) {
+      connectSocket();
+    }
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [authUser]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -29,6 +84,7 @@ export const AuthProvider: React.FC = ({ children }: any) => {
       });
       if (response.status === 200) {
         setAuthUser(response.data.user);
+        setIsAuthenticated(true);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -39,10 +95,10 @@ export const AuthProvider: React.FC = ({ children }: any) => {
     try {
       const response = await apiClient.get("auth/check");
       setAuthUser(response.data);
+      setIsAuthenticated(true);
     } catch (error) {
       console.log("Error in checkAuth:", error);
       setAuthUser(null);
-    } finally {
       setIsAuthenticated(false);
     }
   };
@@ -52,8 +108,9 @@ export const AuthProvider: React.FC = ({ children }: any) => {
       await apiClient.post("auth/logout");
       setAuthUser(null);
       setIsAuthenticated(false);
+      disconnectSocket();
     } catch (error) {
-      console.error("logout error:", error);
+      console.error("Logout error:", error);
     }
   };
 
@@ -79,6 +136,7 @@ export const AuthProvider: React.FC = ({ children }: any) => {
       if (response.status === 201) {
         setAuthUser(response.data.user);
         setIsAuthenticated(true);
+        connectSocket();
       }
     } catch (error: any) {
       console.error("Registration error:", error);
@@ -87,7 +145,17 @@ export const AuthProvider: React.FC = ({ children }: any) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, checkAuth, authUser, logout, register }}
+      value={{
+        isAuthenticated,
+        login,
+        checkAuth,
+        authUser,
+        logout,
+        register,
+        connectSocket,
+        disconnectSocket,
+        onlineUsers,
+      }}
     >
       {children}
     </AuthContext.Provider>

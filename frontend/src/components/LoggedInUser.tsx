@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { User } from "../model/UserModel";
 import { useMessages } from "../context/MessagesContext";
 import { useAuth } from "../context/AuthContext";
@@ -17,7 +17,13 @@ function LoggedInUser({
   selectedUserData,
 }: Props) {
   const { fetchReceiverMessage } = useMessages();
-  const { isAuthenticated } = useAuth();
+  const { onlineUsers } = useAuth();
+  const [isOnline, setIsOnline] = useState(false);
+
+  useEffect(() => {
+    const userIsOnline = onlineUsers.includes(loggedInUser.id.toString());
+    setIsOnline(userIsOnline);
+  }, [onlineUsers, loggedInUser.id]);
 
   return (
     <div
@@ -31,15 +37,13 @@ function LoggedInUser({
         if (toggleMenu) toggleMenu();
       }}
     >
-      {isAuthenticated && (
+      {isOnline ? (
         <div className="avatar online">
           <div className="w-12 md:w-10 rounded-full">
             <img src={loggedInUser.profilePic} alt={loggedInUser.fullName} />
           </div>
         </div>
-      )}
-
-      {!isAuthenticated && (
+      ) : (
         <div className="avatar offline">
           <div className="w-12 md:w-10 rounded-full">
             <img src={loggedInUser.profilePic} alt={loggedInUser.fullName} />
