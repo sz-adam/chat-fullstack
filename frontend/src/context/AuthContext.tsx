@@ -18,6 +18,8 @@ interface AuthContextType {
   connectSocket: () => void;
   disconnectSocket: () => void;
   onlineUsers: string[];
+  socket: Socket | null;
+  setSocket: (socket: Socket) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,6 +48,10 @@ export const AuthProvider: React.FC = ({ children }: any) => {
       socketInstance.on("getOnlineUsers", (userIds) => {
         console.log(userIds);
         setOnlineUsers(userIds);
+      });
+      //üzenetek figyelése
+      socketInstance.on("newMessage", (message) => {
+        console.log("New message received:", message);
       });
 
       setSocket(socketInstance);
@@ -78,10 +84,7 @@ export const AuthProvider: React.FC = ({ children }: any) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await apiClient.post("/auth/login", {
-        email,
-        password,
-      });
+      const response = await apiClient.post("/auth/login", { email, password });
       if (response.status === 200) {
         setAuthUser(response.data.user);
         setIsAuthenticated(true);
@@ -138,7 +141,7 @@ export const AuthProvider: React.FC = ({ children }: any) => {
         setIsAuthenticated(true);
         connectSocket();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Registration error:", error);
     }
   };
@@ -155,6 +158,8 @@ export const AuthProvider: React.FC = ({ children }: any) => {
         connectSocket,
         disconnectSocket,
         onlineUsers,
+        socket,
+        setSocket,
       }}
     >
       {children}

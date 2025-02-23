@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PrismaClient, User } from "@prisma/client";
 import { handleError } from "../utils/errorHandler";
+import { getReceiverSocketId, io } from "../utils/socket";
 
 const prisma = new PrismaClient();
 
@@ -95,6 +96,11 @@ export const sendMessage = async (
         isRead: false,
       },
     });
+    //socket üzenet küldés
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
 
     res.status(201).json(newMessage);
   } catch (error) {

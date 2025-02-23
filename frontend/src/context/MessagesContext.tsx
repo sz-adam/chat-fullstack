@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { User } from "../model/UserModel";
 import { apiClient } from "../lib/axios";
 import { Message } from "../model/MessagesModel";
+import { useAuth } from "./AuthContext";
 
 interface MessagesContextType {
   loggedInUser: User[];
@@ -24,6 +25,8 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
   const [loggedInUser, setLoggedInUser] = useState<User[]>([]);
   const [receiverMessages, setReceiverMessages] = useState<Message[]>([]);
 
+  const { socket } = useAuth();
+
   const fetchLoggedInUsers = async () => {
     try {
       const response = await apiClient.get("/messages/users");
@@ -43,16 +46,6 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
     }
   };
 
-  const fetchSendMessage = async (id: number, message: string) => {
-    try {
-      await apiClient.post(`/messages/send/${id}`, {
-        text: message,
-      });
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
-
   const deleteMessage = async (id: number) => {
     try {
       await apiClient.delete(`/messages/delete/${id}`);
@@ -60,6 +53,37 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
       console.error("Error deleting message:", error);
     }
   };
+
+  const fetchSendMessage = async (id: number, message: string) => {
+    try {
+      const response = await apiClient.post(`/messages/send/${id}`, {
+        text: message,
+      });
+
+      const newMessage = response.data;
+
+      // Hozzáadjuk az üzenetet a helyi állapothoz
+      setReceiverMessages((prev) => [...prev, newMessage]);
+
+      // Socket esemény küldése a szerver felé
+      socket?.emit("sendMessage", newMessage);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  //aktív kapcsolat
+  useEffect(() => {
+    if (socket) {
+      socket.on("newMessage", (newMessage: Message) => {
+        setReceiverMessages((prev) => [...prev, newMessage]);
+      });
+
+      return () => {
+        socket.off("newMessage");
+      };
+    }
+  }, [socket]);
 
   return (
     <userMessagesContext.Provider
