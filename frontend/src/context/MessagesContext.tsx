@@ -11,6 +11,8 @@ interface MessagesContextType {
   fetchReceiverMessage: (id: number) => void;
   fetchSendMessage: (id: number, message: string) => Promise<void>;
   deleteMessage: (id: number) => Promise<void>;
+  selectedUserId: number | null;
+  setSelectedUserId: (id: number | null) => void;
 }
 
 const userMessagesContext = createContext<MessagesContextType | undefined>(
@@ -24,6 +26,7 @@ interface MessagesProviderProps {
 const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
   const [loggedInUser, setLoggedInUser] = useState<User[]>([]);
   const [receiverMessages, setReceiverMessages] = useState<Message[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   const { socket } = useAuth();
 
@@ -40,6 +43,7 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
     try {
       const response = await apiClient.get(`/messages/${id}`);
       setReceiverMessages(response.data);
+      setSelectedUserId(id);
       fetchLoggedInUsers();
     } catch (error) {
       console.log(error);
@@ -62,10 +66,11 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
 
       const newMessage = response.data;
 
-      // Hozzáadjuk az üzenetet a helyi állapothoz
-      setReceiverMessages((prev) => [...prev, newMessage]);
+      // Ellenőrizzük, hogy az üzenet az aktuális beszélgetőpartnerhez tartozik-e
+      if (newMessage.receiverId === selectedUserId) {
+        setReceiverMessages((prev) => [...prev, newMessage]);
+      }
 
-      // Socket esemény küldése a szerver felé
       socket?.emit("sendMessage", newMessage);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -76,14 +81,16 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
   useEffect(() => {
     if (socket) {
       socket.on("newMessage", (newMessage: Message) => {
-        setReceiverMessages((prev) => [...prev, newMessage]);
+        if (newMessage.senderId === selectedUserId) {
+          setReceiverMessages((prev) => [...prev, newMessage]);
+        }
       });
 
       return () => {
         socket.off("newMessage");
       };
     }
-  }, [socket]);
+  }, [socket, selectedUserId]);
 
   return (
     <userMessagesContext.Provider
@@ -94,6 +101,8 @@ const MessagesProvider: React.FC<MessagesProviderProps> = ({ children }) => {
         fetchReceiverMessage,
         fetchSendMessage,
         deleteMessage,
+        selectedUserId,
+        setSelectedUserId,
       }}
     >
       {children}
