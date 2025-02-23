@@ -12,7 +12,7 @@ const Navigation = () => {
   const { authUser, checkAuth, isAuthenticated } = useAuth();
   useEffect(() => {
     checkAuth();
-  }, [authUser]);
+  }, []);
   
 
    if (isAuthenticated && !authUser)
