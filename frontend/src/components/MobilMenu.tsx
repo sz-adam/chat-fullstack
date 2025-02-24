@@ -8,6 +8,7 @@ type Props = {
   isMenuOpen: boolean;
   toggleMenu: () => void;
   setSelectedReceiver: React.Dispatch<React.SetStateAction<number | null>>;
+  selectedUserData?: User | undefined;
 };
 
 function MobilMenu({
@@ -15,6 +16,7 @@ function MobilMenu({
   toggleMenu,
   isMenuOpen,
   setSelectedReceiver,
+  selectedUserData,
 }: Props) {
   return (
     <div
@@ -36,6 +38,7 @@ function MobilMenu({
             loggedInUser={loggedIn}
             setSelectedReceiver={setSelectedReceiver}
             toggleMenu={toggleMenu}
+            selectedUserData={selectedUserData}
           />
         ))}
       </div>

@@ -7,7 +7,7 @@ type Props = {
   loggedInUser: User;
   setSelectedReceiver: React.Dispatch<React.SetStateAction<number | null>>;
   toggleMenu?: () => void;
-  selectedUserData: User | undefined;
+  selectedUserData?: User | undefined;
 };
 
 function LoggedInUser({

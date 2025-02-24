@@ -43,6 +43,7 @@ const ChatContainer = () => {
           loggedInUser={loggedInUser}
           toggleMenu={toggleMenu}
           setSelectedReceiver={setSelectedReceiver}
+          selectedUserData={selectedUserData}
         />
 
         <div className="hidden lg:block ">
