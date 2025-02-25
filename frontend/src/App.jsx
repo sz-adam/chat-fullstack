@@ -1,6 +1,10 @@
 import { AuthProvider } from "./context/AuthContext";
 import { MessagesProvider } from "./context/MessagesContext";
 import Navigation from "./lib/Navigation";
+import { ToastContainer } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+
 
 function App() {
   return (
@@ -14,6 +18,7 @@ function App() {
           }}
         >
           <Navigation />
+          <ToastContainer />
         </div>
       </MessagesProvider>
     </AuthProvider>

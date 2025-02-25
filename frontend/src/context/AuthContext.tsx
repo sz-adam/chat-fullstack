@@ -3,6 +3,8 @@ import { User } from "../model/UserModel";
 import { apiClient } from "../lib/axios";
 import { io, Socket } from "socket.io-client";
 
+import { toast } from "react-toastify";
+
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -88,9 +90,12 @@ export const AuthProvider: React.FC = ({ children }: any) => {
       if (response.status === 200) {
         setAuthUser(response.data.user);
         setIsAuthenticated(true);
+      } else {
+        throw new Error("Incorrect login information");
       }
     } catch (error) {
       console.error("Login error:", error);
+      throw error;
     }
   };
 
@@ -112,6 +117,7 @@ export const AuthProvider: React.FC = ({ children }: any) => {
       setAuthUser(null);
       setIsAuthenticated(false);
       disconnectSocket();
+      toast.info("The user is logged out!");
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -140,9 +146,12 @@ export const AuthProvider: React.FC = ({ children }: any) => {
         setAuthUser(response.data.user);
         setIsAuthenticated(true);
         connectSocket();
+      } else {
+        throw new Error("Incorrect registration data");
       }
     } catch (error) {
       console.error("Registration error:", error);
+      throw error;
     }
   };
 

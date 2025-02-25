@@ -3,12 +3,14 @@ import InputBox from "../components/InputBox";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+import { toast } from "react-toastify";
+
 export const RegisterPage = () => {
   const [fullName, setFullName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [gender, setGender] = useState<"male" | "female">("male");
-  
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -16,9 +18,12 @@ export const RegisterPage = () => {
     event.preventDefault();
     try {
       await register(fullName, email, password, gender);
+      toast.success("Successful registration!");
+
       navigate("/");
     } catch (error) {
       console.log(error);
+      toast.error("incorrect registration data!");
     }
   };
 

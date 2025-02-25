@@ -3,6 +3,8 @@ import InputBox from "../components/InputBox";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+import { toast } from "react-toastify";
+
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,9 +15,11 @@ function LoginPage() {
     event.preventDefault();
     try {
       await login(email, password);
+      toast.success("Successful login!");
       navigate("/");
     } catch (error) {
-      alert("Login failed!");
+      console.error("Login error:", error);
+      toast.error("Incorrect login information!");
     }
   };
   return (
