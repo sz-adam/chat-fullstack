@@ -33,6 +33,7 @@ This is a real-time chat application built with modern web technologies. It supp
 - React-Router-Dom
 - Socket.io-Client
 - DaisyUI
+- React-Toastify
 
 ## Features
 - User authentication (register, login, JWT/cookie-parser-based authentication)
