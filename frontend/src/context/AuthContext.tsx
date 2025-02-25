@@ -95,7 +95,7 @@ export const AuthProvider: React.FC = ({ children }: any) => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      throw error;
+      throw error.response.data.error;
     }
   };
 
@@ -151,7 +151,7 @@ export const AuthProvider: React.FC = ({ children }: any) => {
       }
     } catch (error) {
       console.error("Registration error:", error);
-      throw error;
+      throw error.response.data.error;
     }
   };
 

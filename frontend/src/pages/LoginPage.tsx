@@ -19,7 +19,7 @@ function LoginPage() {
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Incorrect login information!");
+      toast.error(error);
     }
   };
   return (

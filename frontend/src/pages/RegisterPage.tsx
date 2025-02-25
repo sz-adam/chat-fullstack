@@ -19,11 +19,10 @@ export const RegisterPage = () => {
     try {
       await register(fullName, email, password, gender);
       toast.success("Successful registration!");
-
       navigate("/");
     } catch (error) {
       console.log(error);
-      toast.error("incorrect registration data!");
+      toast.error(error);
     }
   };
 
