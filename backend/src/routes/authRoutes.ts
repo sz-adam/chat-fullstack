@@ -2,6 +2,7 @@ import express from "express";
 
 import { checkAuth, login, logout, signup } from "../controllers/authController";
 import { protectRoute } from "../middleware/authMiddleware";
+import "../swagger/authSwaggerDocs"; 
 
 
 const router = express.Router();
