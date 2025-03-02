@@ -5,6 +5,7 @@ import messageRoutes from "./routes/messageRoutes";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { app, server } from "./utils/socket";
+import { setupSwagger } from "./swagger/swaggerConfig";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(
     credentials: true,
   })
 );
+setupSwagger(app);
 
 app.use(express.json());
 app.use("/api/auth", authRoutes);
