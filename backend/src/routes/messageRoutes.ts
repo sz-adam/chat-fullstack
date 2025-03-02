@@ -7,6 +7,7 @@ import {
   unreadMessage,
 } from "../controllers/messageController";
 import { protectRoute } from "../middleware/authMiddleware";
+import "../swagger/messageSwaggerDocs"
 
 const router = express.Router();
 

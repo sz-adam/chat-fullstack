@@ -1,7 +1,14 @@
 /**
  * @swagger
+ * tags:
+ *   - name: Authentication
+ */
+
+/**
+ * @swagger
  * /api/auth/signup:
  *   post:
+ *     tags: [Authentication]
  *     summary: User signup
  *     description: Allows a user to sign up.
  *     requestBody:
@@ -34,6 +41,7 @@
  * @swagger
  * /api/auth/login:
  *   post:
+ *     tags: [Authentication]
  *     summary: User login
  *     description: Allows a user to log in.
  *     requestBody:
@@ -63,6 +71,7 @@
  * @swagger
  * /api/auth/logout:
  *   post:
+ *     tags: [Authentication]
  *     summary: User logout
  *     description: Logs out a user by clearing the JWT cookie.
  *     responses:
@@ -76,6 +85,7 @@
  * @swagger
  * /api/auth/check:
  *   get:
+ *     tags: [Authentication]
  *     summary: Check authentication status
  *     description: Checks if the user is authenticated.
  *     responses:
