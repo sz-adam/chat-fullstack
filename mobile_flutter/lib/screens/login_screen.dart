@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_flutter/screens/register_screen.dart';
 import '../widgets/background.dart';
 import '../widgets/custom_text_field.dart';
-import '../widgets/login_button.dart';
-import '../widgets/register_button.dart';
+import '../widgets/auth_button.dart';
+import '../widgets/auth_screen_navigation_button.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _isLoggedIn = false;
@@ -23,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       Future.delayed(Duration(seconds: 2), () {
-        print("Login successful! Username: ${_usernameController.text}");
+        print("Login successful! Username: ${_emailController.text}");
       });
     }
   }
@@ -56,11 +57,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 30),
                     CustomTextField(
-                      icon: Icons.person,
-                      hint: "Username",
-                      controller: _usernameController,
+                      icon: Icons.email,
+                      hint: "E-mail",
+                      controller: _emailController,
                       validator: (value) => value == null || value.isEmpty
-                          ? "Username cannot be empty"
+                          ? "E-mail cannot be empty"
                           : null,
                     ),
                     const SizedBox(height: 20),
@@ -75,14 +76,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     Center(
-                      child: LoginButton(isLoggedIn: _isLoggedIn, onPressed: _handleLogin),
+                      child: AuthButton(
+                          isLoggedIn: _isLoggedIn,
+                          onPressed: _handleLogin,
+                          buttonText: "Login"),
                     ),
                   ],
                 ),
               ),
             ),
           ),
-          RegisterButton(),
+          AuthScreenNavigationButton(
+            icon: Icons.person_add,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => RegisterScreen()),
+            ),
+          ),
         ],
       ),
     );

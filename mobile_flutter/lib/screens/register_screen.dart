@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_flutter/screens/login_screen.dart';
 import '../widgets/background.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/auth_button.dart';
-import '../widgets/register_button.dart';
+import '../widgets/auth_screen_navigation_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -14,7 +15,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
 
   bool _isLoggedIn = false;
 
@@ -86,14 +86,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 20),
                     Center(
-                      child: AuthButton(isLoggedIn: _isLoggedIn, onPressed: _handleRegistration,buttonText:"Registration"),
+                      child: AuthButton(
+                          isLoggedIn: _isLoggedIn,
+                          onPressed: _handleRegistration,
+                          buttonText: "Registration"),
                     ),
                   ],
                 ),
               ),
             ),
           ),
-          RegisterButton(),
+          AuthScreenNavigationButton(
+            icon: Icons.login,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+            ),
+          ),
         ],
       ),
     );
