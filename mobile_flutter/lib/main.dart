@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_flutter/screens/login_screen.dart';
+
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
