@@ -24,7 +24,7 @@ class Background extends StatelessWidget {
         ClipPath(
           clipper: WaveClipperTwo(),
           child: Container(
-            height: 220,
+            height: 120,
             color: Colors.white.withOpacity(0.15),
           ),
         ),
@@ -33,7 +33,7 @@ class Background extends StatelessWidget {
           child: ClipPath(
             clipper: WaveClipperTwo(reverse: true),
             child: Container(
-              height: 220,
+              height: 120,
               color: Colors.white.withOpacity(0.15),
             ),
           ),
