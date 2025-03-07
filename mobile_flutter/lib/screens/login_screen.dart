@@ -1,38 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_flutter/screens/home_screen.dart';
 import 'package:mobile_flutter/screens/register_screen.dart';
 import 'package:mobile_flutter/utils/FadePageAnimation.dart';
 import 'package:mobile_flutter/utils/route_animation.dart';
+import '../providers/auth_provider.dart';
 import '../utils/background.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/auth_screen_navigation_button.dart';
 
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreen extends ConsumerWidget {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  bool _isLoggedIn = false;
-
-  void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoggedIn = true;
-      });
-
-      Future.delayed(Duration(seconds: 2), () {
-        print("Login successful! Username: ${_emailController.text}");
-      });
-    }
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final authNotifier = ref.read(authProvider.notifier);
+
+    void _handleLogin() async {
+      if (_formKey.currentState!.validate()) {
+        await authNotifier.login(
+          _emailController.text,
+          _passwordController.text,
+        );
+
+        // animáció lefutása után navigál át
+        if (ref.read(authProvider).isAuthenticated) {
+          await Future.delayed(const Duration(milliseconds: 800));
+
+          // Navigálás
+          if (context.mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          }
+        }
+      }
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -78,11 +87,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             : null,
                       ),
                       const SizedBox(height: 20),
+                      if (authState.errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            authState.errorMessage!,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 16),
+                          ),
+                        ),
                       Center(
                         child: AuthButton(
-                            isLoggedIn: _isLoggedIn,
-                            onPressed: _handleLogin,
-                            buttonText: "Login"),
+                          isLoggedIn: authState.isAuthenticated,
+                          onPressed: _handleLogin,
+                          buttonText: "Login",
+                        ),
                       ),
                     ],
                   ),
