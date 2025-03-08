@@ -18,3 +18,15 @@ class SecureStorageService {
     await _storage.delete(key: "jwt_token");
   }
 }
+
+// JWT kinyerése a Set-Cookie
+String? extractJwtFromCookie(String cookieHeader) {
+  final cookies = cookieHeader.split(';');
+  for (var cookie in cookies) {
+    final parts = cookie.split('=');
+    if (parts.length == 2 && parts[0].trim() == 'jwt') {
+      return parts[1].trim();
+    }
+  }
+  return null;
+}

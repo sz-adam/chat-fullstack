@@ -1,34 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_flutter/screens/home_screen.dart';
 import 'package:mobile_flutter/screens/login_screen.dart';
 import 'package:mobile_flutter/utils/FadePageAnimation.dart';
 import 'package:mobile_flutter/utils/route_animation.dart';
+import '../providers/auth_provider.dart';
 import '../utils/background.dart';
+import '../widgets/CustomCheckbox.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/auth_screen_navigation_button.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _isLoggedIn = false;
+  String? _selectedGender;
 
-  void _handleRegistration() {
+  void _handleRegistration() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoggedIn = true;
-      });
+      if (_selectedGender == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Please select a gender")),
+        );
+        return;
+      }
 
-      Future.delayed(Duration(seconds: 2), () {
-        print("Login successful! Username: ${_usernameController.text}");
-      });
+      try {
+        final authNotifier = ref.read(authProvider.notifier);
+        await authNotifier.register(
+          _usernameController.text,
+          _emailController.text,
+          _passwordController.text,
+          _selectedGender!,
+        );
+
+        if (mounted) {
+          setState(() {
+            _isLoggedIn = true;
+          });
+
+          await Future.delayed(Duration(seconds: 1));
+
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          }
+        }
+      } catch (error) {
+        print("Error during registration: $error");
+      }
     }
   }
 
@@ -88,11 +119,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             : null,
                       ),
                       const SizedBox(height: 20),
+
+                      // Gender selection in a Row
+
+                      const SizedBox(height: 10),
+                      Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomCheckbox(
+                              label: "Male",
+                              isSelected: _selectedGender == "Male",
+                              activeColor: Colors.blue,
+                              onTap: () {
+                                setState(() {
+                                  _selectedGender =
+                                      _selectedGender == "Male" ? null : "Male";
+                                });
+                              },
+                            ),
+                            const SizedBox(width: 30),
+                            CustomCheckbox(
+                              label: "Female",
+                              isSelected: _selectedGender == "Female",
+                              activeColor: Colors.pink,
+                              onTap: () {
+                                setState(() {
+                                  _selectedGender = _selectedGender == "Female"
+                                      ? null
+                                      : "Female";
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
                       Center(
                         child: AuthButton(
-                            isLoggedIn: _isLoggedIn,
-                            onPressed: _handleRegistration,
-                            buttonText: "Registration"),
+                          isLoggedIn: _isLoggedIn,
+                          onPressed: _handleRegistration,
+                          buttonText: "Register",
+                        ),
                       ),
                     ],
                   ),

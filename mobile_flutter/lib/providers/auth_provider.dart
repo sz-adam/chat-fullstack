@@ -155,4 +155,67 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = AuthState(isAuthenticated: true, errorMessage: "Logout failed.");
     }
   }
+
+  Future<void> register(String fullName, String email, String password, String gender) async {
+    try {
+      // 1. Véletlenszerű profilkép lekérése, felgyorsítani a képgenerálást
+      final randomUserResponse = await http.get(Uri.parse('https://randomuser.me/api/?gender=$gender'));
+
+      if (randomUserResponse.statusCode != 200) {
+        throw Exception("Failed to fetch random user data");
+      }
+
+      final data = jsonDecode(randomUserResponse.body);
+      final avatar = data['results'][0]['picture']['large'];
+
+      // 2. Regisztrációs  küldése a backendnek
+      final response = await http.post(
+        Uri.parse(ApiConstants.register),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "fullName": fullName,
+          "email": email,
+          "password": password,
+          "avatar": avatar,
+        }),
+      );
+
+      if (response.statusCode != 201) {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData["error"] ?? "Unknown error");
+      }
+
+      // 3. JWT kinyerése a Set-Cookie fejlécből
+      final cookies = response.headers['set-cookie'];
+      final token = cookies != null ? extractJwtFromCookie(cookies) : null;
+
+      if (token == null) {
+        throw Exception("JWT extraction failed");
+      }
+
+      await SecureStorageService.saveJwtToken(token);
+
+      // 4. JSON feldolgozása
+      final responseData = jsonDecode(response.body);
+      final userData = responseData["user"];
+      final user = userData != null ? User.fromJson(userData) : null;
+
+      state = AuthState(
+        isAuthenticated: true,
+        token: token,
+        user: user,
+        errorMessage: null,
+      );
+
+      print("User registered and logged in successfully");
+
+    } catch (e) {
+      print("Error during registration: $e");
+      state = AuthState(isAuthenticated: false, errorMessage: "Registration failed: $e");
+    }
+  }
+
+
+
+
 }

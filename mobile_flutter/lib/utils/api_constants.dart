@@ -5,6 +5,8 @@ class ApiConstants {
   static const String login = "${_baseUrl}auth/login";
   static const String checkAuth ="${_baseUrl}auth/check";
   static const String logout ="${_baseUrl}auth/logout";
+  static const String register ="${_baseUrl}auth/signup";
+
 
 
 }
