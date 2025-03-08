@@ -3,20 +3,22 @@ class User {
   String fullName;
   String email;
   String? profilePic;
-  bool isDarkMode;
+  bool isDarkMod;
   String createdAt;
   String updatedAt;
   int unreadMessages;
+  String? password;
 
   User({
     required this.id,
     required this.fullName,
     required this.email,
     this.profilePic,
-    required this.isDarkMode,
+    required this.isDarkMod,
     required this.createdAt,
     required this.updatedAt,
     required this.unreadMessages,
+    this.password,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -25,10 +27,11 @@ class User {
       fullName: json['fullName'],
       email: json['email'],
       profilePic: json['profilePic'],
-      isDarkMode: json['isDarkMod'],
+      isDarkMod: json['isDarkMod'],
       createdAt: json['createdAt'] ?? '',
       updatedAt: json['updatedAt'] ?? '',
       unreadMessages: json['unreadMessages'] ?? 0,
+      password: json['password'],
     );
   }
 }
