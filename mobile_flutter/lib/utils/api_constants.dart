@@ -3,5 +3,6 @@ class ApiConstants {
 
   // Auth endpoints
   static const String login = "${_baseUrl}auth/login";
+  static const String checkAuth ="${_baseUrl}auth/check";
 
 }

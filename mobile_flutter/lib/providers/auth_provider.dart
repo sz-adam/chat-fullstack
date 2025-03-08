@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile_flutter/model/User.dart';
 import 'package:mobile_flutter/utils/api_constants.dart';
+import 'package:mobile_flutter/utils/secure_storage_service.dart';
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>(
   (ref) {
@@ -25,9 +26,9 @@ class AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
-
-  AuthNotifier() : super(AuthState(isAuthenticated: false));
+  AuthNotifier() : super(AuthState(isAuthenticated: false)) {
+    checkAuth();
+  }
 
   Future<void> login(String email, String password) async {
     try {
@@ -44,7 +45,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
         final user = User.fromJson(userData);
 
-        await _storage.write(key: "jwt_token", value: token);
+        await SecureStorageService.saveJwtToken(token);
         state = AuthState(
           isAuthenticated: true,
           token: token,
@@ -61,6 +62,56 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isAuthenticated: false,
         errorMessage: "Network error: ${e.toString()}",
       );
+    }
+  }
+
+  Future<void> checkAuth() async {
+    try {
+      final token = await SecureStorageService.getJwtToken();
+      if (token == null) {
+        state = AuthState(isAuthenticated: false);
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse(ApiConstants.checkAuth),
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'jwt=$token',
+        },
+      );
+
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        try {
+          // A válasz JSON dekódolása
+          final data = jsonDecode(response.body);
+
+          if (data is Map<String, dynamic>) {
+            // Felhasználói adatokat kinyerése
+            final user = User.fromJson(data);
+
+            state = AuthState(
+              isAuthenticated: true,
+              token: token,
+              user: user,
+              errorMessage: null,
+            );
+          } else {
+            state = AuthState(isAuthenticated: false);
+          }
+        } catch (e) {
+          print("Error decoding JSON: $e");
+          state = AuthState(isAuthenticated: false);
+        }
+      } else {
+        state = AuthState(isAuthenticated: false);
+      }
+    } catch (error) {
+      print("Error during authentication check: $error");
+      state = AuthState(isAuthenticated: false);
     }
   }
 }
