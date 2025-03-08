@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile_flutter/model/User.dart';
 import 'package:mobile_flutter/utils/api_constants.dart';
 import 'package:mobile_flutter/utils/secure_storage_service.dart';
@@ -17,19 +16,21 @@ class AuthState {
   final String? token;
   final String? errorMessage;
   final User? user;
+  final bool isLoading;
 
   AuthState(
       {required this.isAuthenticated,
       this.token,
       this.errorMessage,
-      this.user});
+      this.user,
+      this.isLoading = false});
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(AuthState(isAuthenticated: false)) {
+  AuthNotifier() : super(AuthState(isAuthenticated: false, isLoading: true)) {
     checkAuth();
   }
-
+  //bejelentkezés
   Future<void> login(String email, String password) async {
     try {
       final response = await http.post(
@@ -65,11 +66,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  //automatikus beléptetés token alapján
   Future<void> checkAuth() async {
     try {
+      state = AuthState(isAuthenticated: false, isLoading: true);
       final token = await SecureStorageService.getJwtToken();
       if (token == null) {
-        state = AuthState(isAuthenticated: false);
+        state = AuthState(isAuthenticated: false, isLoading: false);
         return;
       }
 
@@ -81,9 +84,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
         },
       );
 
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
-
       if (response.statusCode == 200) {
         try {
           // A válasz JSON dekódolása
@@ -94,24 +94,65 @@ class AuthNotifier extends StateNotifier<AuthState> {
             final user = User.fromJson(data);
 
             state = AuthState(
+              isLoading: false,
               isAuthenticated: true,
               token: token,
               user: user,
               errorMessage: null,
             );
           } else {
-            state = AuthState(isAuthenticated: false);
+            state = AuthState(
+                isAuthenticated: false,
+                isLoading: false,
+                errorMessage: 'Authentication failed');
           }
         } catch (e) {
           print("Error decoding JSON: $e");
-          state = AuthState(isAuthenticated: false);
+          state = AuthState(
+            isAuthenticated: false,
+            isLoading: false,
+          );
         }
       } else {
-        state = AuthState(isAuthenticated: false);
+        state = AuthState(
+          isAuthenticated: false,
+          isLoading: false,
+        );
       }
     } catch (error) {
       print("Error during authentication check: $error");
-      state = AuthState(isAuthenticated: false);
+      state = AuthState(
+        isAuthenticated: false,
+        isLoading: false,
+      );
+    }
+  }
+
+  //kijelentkezés
+  Future<void> logout() async {
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConstants.logout),
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'jwt=${await SecureStorageService.getJwtToken()}',
+        },
+      );
+      //Ha a backend törölte a tokent akkor töröljük a SecureStorage-ból is
+      if (response.statusCode == 200) {
+        await SecureStorageService.deleteJwtToken();
+
+        state = AuthState(isAuthenticated: false);
+
+        print("User logged out successfully.");
+      } else {
+        print("Failed to logout from server.");
+        state =
+            AuthState(isAuthenticated: true, errorMessage: "Logout failed.");
+      }
+    } catch (e) {
+      print("Error during logout: $e");
+      state = AuthState(isAuthenticated: true, errorMessage: "Logout failed.");
     }
   }
 }

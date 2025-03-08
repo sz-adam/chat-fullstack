@@ -12,10 +12,14 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
-
+//Loadingra külön componenst és formázást
     return MaterialApp(
       title: 'My App',
-      home: authState.isAuthenticated ? HomeScreen() : LoginScreen(),
+      home: authState.isLoading
+          ? const Scaffold(
+        body: Center(child: Text("Loading")),
+      )
+          : (authState.isAuthenticated ? HomeScreen() : LoginScreen()),
     );
   }
 }
