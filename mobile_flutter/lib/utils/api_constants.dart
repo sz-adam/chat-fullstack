@@ -7,6 +7,9 @@ class ApiConstants {
   static const String logout ="${_baseUrl}auth/logout";
   static const String register ="${_baseUrl}auth/signup";
 
+  //users endpoint
+  static const String allUser ="${_baseUrl}messages/users";
+
 
 
 }
