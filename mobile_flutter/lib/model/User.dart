@@ -24,10 +24,10 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      fullName: json['fullName'],
-      email: json['email'],
+      fullName: json['fullName'] ,
+      email: json['email'] ?? 'N/A',
       profilePic: json['profilePic'],
-      isDarkMod: json['isDarkMod'],
+      isDarkMod: json['isDarkMod'] ?? false,
       createdAt: json['createdAt'] ?? '',
       updatedAt: json['updatedAt'] ?? '',
       unreadMessages: json['unreadMessages'] ?? 0,
