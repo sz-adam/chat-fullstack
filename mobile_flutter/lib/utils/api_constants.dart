@@ -10,6 +10,11 @@ class ApiConstants {
   //users endpoint
   static const String allUser ="${_baseUrl}messages/users";
 
+  //messages endpoints
+  static String getMessages(int partnerId) {
+    return "${_baseUrl}messages/$partnerId";
+  }
+
 
 
 }
