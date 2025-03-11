@@ -77,6 +77,33 @@ class MessagesNotifier extends StateNotifier<List<Message>> {
     }
   }
 
+  //üzenet törlése
+  Future<void> deleteMessage(int messageId) async {
+    try {
+      final token = await SecureStorageService.getJwtToken();
+      if (token == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final url = ApiConstants.deleteMessage(messageId);
+      final response = await http.delete(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'jwt=$token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        state = state.where((msg) => msg.id != messageId).toList();
+      } else {
+        throw Exception('Failed to delete message');
+      }
+    } catch (e) {
+      print('Error deleting message: $e');
+    }
+  }
+
 
 }
 

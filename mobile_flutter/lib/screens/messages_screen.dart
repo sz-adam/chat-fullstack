@@ -44,8 +44,10 @@ class MessageScreen extends ConsumerWidget {
             child: ListView.builder(
               itemCount: messages.length,
               itemBuilder: (context, index) {
-                final isSender = messages[index].senderId == user.id;
+                final isReceiver = messages[index].receiverId ==
+                    user.id;
                 // Formázott időpont
+                print(messages);
                 final createdAt = DateFormat('HH:mm')
                     .format(DateTime.parse(messages[index].createdAt));
 
@@ -57,26 +59,28 @@ class MessageScreen extends ConsumerWidget {
                     (context as Element).reassemble();
                   },
                   child: Align(
-                    alignment:
-                        isSender ? Alignment.centerRight : Alignment.centerLeft,
+                    alignment: isReceiver
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
                     child: Container(
                       margin: const EdgeInsets.symmetric(
                           vertical: 5, horizontal: 10),
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 15),
                       decoration: BoxDecoration(
-                        color: isSender ? Colors.blueAccent : Colors.grey[300],
+                        color:
+                            isReceiver ? Colors.blueAccent : Colors.grey[300],
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Column(
-                        crossAxisAlignment: isSender
+                        crossAxisAlignment: isReceiver
                             ? CrossAxisAlignment.end
                             : CrossAxisAlignment.start,
                         children: [
                           Text(
                             messages[index].text,
                             style: TextStyle(
-                                color: isSender ? Colors.white : Colors.black,
+                                color: isReceiver ? Colors.white : Colors.black,
                                 fontSize: 20),
                           ),
                           const SizedBox(height: 5),
@@ -84,20 +88,26 @@ class MessageScreen extends ConsumerWidget {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
+                                //küldései időpont
                                 Text(
                                   '$createdAt',
                                   style: TextStyle(
-                                      color: isSender
+                                      color: isReceiver
                                           ? Colors.white70
                                           : Colors.black54,
                                       fontSize: 16),
                                 ),
-                                IconButton(
-                                  icon: Icon(Icons.close, color: Colors.red),
-                                  onPressed: () {
-                                    // Üzenet törlése
-                                  },
-                                ),
+                                //törlés megjelenítése
+                                if (isReceiver)
+                                  IconButton(
+                                    icon: const Icon(Icons.close,
+                                        color: Colors.red),
+                                    onPressed: () {
+                                      ref
+                                          .read(messagesProvider.notifier)
+                                          .deleteMessage(messages[index].id);
+                                    },
+                                  ),
                               ],
                             ),
                           ],
@@ -135,7 +145,9 @@ class MessageScreen extends ConsumerWidget {
                   icon: const Icon(Icons.send),
                   onPressed: () {
                     if (_messageController.text.isNotEmpty) {
-                      ref.read(messagesProvider.notifier).sendMessage(user.id, _messageController.text);
+                      ref
+                          .read(messagesProvider.notifier)
+                          .sendMessage(user.id, _messageController.text);
                       _messageController.clear();
                     }
                   },
