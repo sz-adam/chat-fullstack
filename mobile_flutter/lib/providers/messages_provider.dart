@@ -48,6 +48,35 @@ class MessagesNotifier extends StateNotifier<List<Message>> {
     }
   }
 
+  //üzenet küldése
+  Future<void> sendMessage(int partnerId, String messageText) async {
+    try {
+      final token = await SecureStorageService.getJwtToken();
+      if (token == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final url = ApiConstants.sendMessage(partnerId);
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'jwt=$token',
+        },
+        body: jsonEncode({'text': messageText}),
+      );
+
+      if (response.statusCode == 201) {
+        final message = Message.fromJson(jsonDecode(response.body));
+        state = [...state, message];
+      } else {
+        throw Exception('Failed to send message');
+      }
+    } catch (e) {
+      print('Error sending message: $e');
+    }
+  }
+
 
 }
 

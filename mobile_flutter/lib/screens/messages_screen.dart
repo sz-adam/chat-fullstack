@@ -130,10 +130,12 @@ class MessageScreen extends ConsumerWidget {
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
+                //üzenet küldése
                 IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: () {
                     if (_messageController.text.isNotEmpty) {
+                      ref.read(messagesProvider.notifier).sendMessage(user.id, _messageController.text);
                       _messageController.clear();
                     }
                   },

@@ -14,7 +14,10 @@ class ApiConstants {
   static String getMessages(int partnerId) {
     return "${_baseUrl}messages/$partnerId";
   }
-
+  //üzenet küldése
+  static String sendMessage(int partnerId){
+    return"${_baseUrl}messages/send/$partnerId";
+  }
 
 
 }
