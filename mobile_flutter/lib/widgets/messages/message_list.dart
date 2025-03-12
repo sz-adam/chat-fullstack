@@ -19,6 +19,7 @@ class MessageList extends ConsumerWidget {
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final isReceiver = messages[index].receiverId == user.id;
+        //date format
         final createdAt = DateFormat('HH:mm')
             .format(DateTime.parse(messages[index].createdAt));
 
@@ -57,6 +58,7 @@ class MessageList extends ConsumerWidget {
                             fontSize: 16,
                           ),
                         ),
+                        //delete button
                         if (isReceiver)
                           IconButton(
                             icon: const Icon(Icons.close, color: Colors.red),

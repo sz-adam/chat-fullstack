@@ -32,6 +32,7 @@ class MessageInput extends ConsumerWidget {
               style: const TextStyle(fontSize: 16),
             ),
           ),
+          //üzenet küldése
           IconButton(
             icon: const Icon(Icons.send),
             onPressed: () {
