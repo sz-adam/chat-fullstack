@@ -23,8 +23,8 @@ class SocketService with ChangeNotifier {
       print('Socket connected: ${socket!.id}');
     });
 
-    socket!.on("getOnlineUsers", (data) {
-      onlineUsers = List<String>.from(data);
+    socket!.on("getOnlineUsers", (userId) {
+      onlineUsers = List<String>.from(userId);
       print('Online users: $onlineUsers');
       notifyListeners();
     });
