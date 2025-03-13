@@ -5,6 +5,8 @@ import 'package:mobile_flutter/model/User.dart';
 import 'package:mobile_flutter/utils/api_constants.dart';
 import 'package:mobile_flutter/utils/secure_storage_service.dart';
 
+import '../socketIo/socket_service.dart';
+
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>(
   (ref) {
     return AuthNotifier();
@@ -27,6 +29,7 @@ class AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
+  final SocketService socketService = SocketService();
   AuthNotifier() : super(AuthState(isAuthenticated: false, isLoading: true)) {
     checkAuth();
   }
@@ -53,6 +56,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           user: user,
           errorMessage: null,
         );
+        socketService.connect(user.id.toString());
       } else {
         final errorData = jsonDecode(response.body);
         final errorMessage = errorData["error"];
@@ -100,6 +104,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
               user: user,
               errorMessage: null,
             );
+            socketService.connect(user.id.toString());
           } else {
             state = AuthState(
                 isAuthenticated: false,
@@ -143,7 +148,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         await SecureStorageService.deleteJwtToken();
 
         state = AuthState(isAuthenticated: false);
-
+        socketService.disconnect();
         print("User logged out successfully.");
       } else {
         print("Failed to logout from server.");
@@ -156,10 +161,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> register(String fullName, String email, String password, String gender) async {
+  Future<void> register(
+      String fullName, String email, String password, String gender) async {
     try {
       // 1. Véletlenszerű profilkép lekérése, felgyorsítani a képgenerálást
-      final randomUserResponse = await http.get(Uri.parse('https://randomuser.me/api/?gender=$gender'));
+      final randomUserResponse = await http
+          .get(Uri.parse('https://randomuser.me/api/?gender=$gender'));
 
       if (randomUserResponse.statusCode != 200) {
         throw Exception("Failed to fetch random user data");
@@ -208,14 +215,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       print("User registered and logged in successfully");
-
     } catch (e) {
       print("Error during registration: $e");
-      state = AuthState(isAuthenticated: false, errorMessage: "Registration failed: $e");
+      state = AuthState(
+          isAuthenticated: false, errorMessage: "Registration failed: $e");
     }
   }
-
-
-
-
 }
