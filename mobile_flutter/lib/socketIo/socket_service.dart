@@ -2,8 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-
-class SocketService with ChangeNotifier {
+class SocketService extends ChangeNotifier {
   IO.Socket? socket;
   List<String> onlineUsers = [];
 
@@ -24,7 +23,8 @@ class SocketService with ChangeNotifier {
     });
 
     socket!.on("getOnlineUsers", (userId) {
-      onlineUsers = List<String>.from(userId);
+      // stringgé alakítjuk az id-t
+      onlineUsers = List<String>.from(userId.map((e) => e.toString()));
       print('Online users: $onlineUsers');
       notifyListeners();
     });
@@ -43,8 +43,12 @@ class SocketService with ChangeNotifier {
     socket = null;
     notifyListeners();
   }
+
+  List<String> getOnlineUsers() {
+    return onlineUsers;
+  }
 }
 
-final socketServiceProvider = Provider<SocketService>((ref) {
+final socketServiceProvider = ChangeNotifierProvider<SocketService>((ref) {
   return SocketService();
 });
