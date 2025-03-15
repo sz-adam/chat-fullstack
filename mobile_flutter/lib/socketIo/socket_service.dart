@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:mobile_flutter/model/Message.dart';
 
 class SocketService extends ChangeNotifier {
   IO.Socket? socket;
   List<String> onlineUsers = [];
+  Message? latestMessage; // Store the latest message
 
   void connect(String userId) {
     socket = IO.io(
@@ -22,10 +24,18 @@ class SocketService extends ChangeNotifier {
       print('Socket connected: ${socket!.id}');
     });
 
+    // Online felhasználók figyelése
     socket!.on("getOnlineUsers", (userId) {
       // stringgé alakítjuk az id-t
       onlineUsers = List<String>.from(userId.map((e) => e.toString()));
       print('Online users: $onlineUsers');
+      notifyListeners();
+    });
+
+    // Üzenet érkezése
+    socket!.on('newMessage', (messageData) {
+      print('New message received: $messageData');
+      latestMessage = Message.fromJson(messageData);
       notifyListeners();
     });
 
@@ -42,6 +52,10 @@ class SocketService extends ChangeNotifier {
     socket?.disconnect();
     socket = null;
     notifyListeners();
+  }
+
+  Message? getLatestMessage() {
+    return latestMessage;
   }
 
   List<String> getOnlineUsers() {
