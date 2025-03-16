@@ -5,7 +5,7 @@ import 'package:mobile_flutter/model/User.dart';
 import 'package:mobile_flutter/utils/api_constants.dart';
 import 'package:mobile_flutter/utils/secure_storage_service.dart';
 
-import '../socketIo/socket_service.dart';
+import '../services/socket_service.dart';
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>(
   (ref) {

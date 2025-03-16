@@ -3,17 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:mobile_flutter/model/Message.dart';
 
+import 'notification_service.dart';
+
 class SocketService extends ChangeNotifier {
   IO.Socket? socket;
   List<String> onlineUsers = [];
-  Message? latestMessage; // Store the latest message
+  Message? latestMessage;
 
   void connect(String userId) {
     socket = IO.io(
       'http://192.168.100.14:5001',
       IO.OptionBuilder()
           .setTransports(['websocket'])
-          .setQuery({'userId': userId}) // userId küldése a backendnek
+          .setQuery({'userId': userId})
           .disableAutoConnect()
           .build(),
     );
@@ -24,19 +26,22 @@ class SocketService extends ChangeNotifier {
       print('Socket connected: ${socket!.id}');
     });
 
-    // Online felhasználók figyelése
     socket!.on("getOnlineUsers", (userId) {
-      // stringgé alakítjuk az id-t
       onlineUsers = List<String>.from(userId.map((e) => e.toString()));
       print('Online users: $onlineUsers');
       notifyListeners();
     });
 
-    // Üzenet érkezése
     socket!.on('newMessage', (messageData) {
       print('New message received: $messageData');
       latestMessage = Message.fromJson(messageData);
       notifyListeners();
+      print(messageData);
+      // Küldj helyi értesítést
+      NotificationService.showNotification(
+        'Új üzenet érkezett :',
+        latestMessage!.text,
+      );
     });
 
     socket!.onDisconnect((_) {

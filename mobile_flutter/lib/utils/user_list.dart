@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_flutter/providers/users_provider.dart';
 import '../screens/messages_screen.dart';
-import '../socketIo/socket_service.dart';
+import '../services/socket_service.dart';
 
 class UsersList extends ConsumerStatefulWidget {
   @override
