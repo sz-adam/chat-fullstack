@@ -35,6 +35,17 @@ This is a real-time chat application built with modern web technologies. It supp
 - DaisyUI
 - React-Toastify
 
+### Flutter
+- flutter animate
+- flutter custom clippers
+- flutter riverpod
+- http
+- flutter secure storage
+- intl
+- socket io client
+- flutter local notifications
+- permission handler
+
 ## Features
 - User authentication (register, login, JWT/cookie-parser-based authentication)
 - Real-time messaging with WebSockets (Socket.io)
