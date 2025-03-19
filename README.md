@@ -58,3 +58,5 @@ This is a real-time chat application built with modern web technologies. It supp
 
 ![chat1](frontend/public/chat.jpg)
 ![chat2](frontend/public/chat2.jpg)
+![chat3](frontend/public/mobile.jpg)
+![chat4](frontend/public/mobile2.jpg)
